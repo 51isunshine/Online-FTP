@@ -1,20 +1,19 @@
 /**
- * Created by dylan.zhang on 4/3/16.
+ * Created by dylan.zhang.
  */
 var express = require('express'),
     router = express.Router(),
     fs = require('fs'),
-    marked = require('marked'),
     _path_ = require('path'),
     util = require('util'),
-    mime=require("./mime.js").mime,
+    mime=require("./../utils/mime.js").mime,
     querystring = require("querystring"),
-    xmu_upload=require('../module/xmu/xmu_upload.js'),
-    xmu_bbs = require('../module/xmu/xmu_bbs.js'),
-    Login = require('../module/xmu/login.js')
+    xmu_upload=require('./../module/upload_file.js'),
+    xmu_bbs = require('./../module/upload_bbs.js'),
+    Login = require('./../module/login.js')
     passport = require('passport'),
     multiparty = require("multiparty");
-
+require("mongoose-query-paginate");
 var config = require('../config.js'),
     tools = require('../utils/tools.js'),
     crypto = require('crypto');
@@ -48,16 +47,9 @@ router.post('/bbs',authRequired,function(req,res,next){
 
 var upload_root_dir_name={
     "default":"默认目录",
-    "information_safety":"信息安全技术",
-    "android":"嵌入式",
-    "digital_media":"数字媒体技术",
-    "network":"现代网络技术",
-    "philosophy":"自然辩证法",
-    "object_o":"面向对象分析与设计",
-    "software":"高级软件工程",
-    "classmate":"同学录",
-    "english":"英语",
-    "temp":"临时目录"
+    "javascript":"JS",
+    "temp":"临时目录",
+    "classmate":"同学录"
 
 }
 
@@ -74,15 +66,12 @@ router.post("/uploadfile",function(req,res,next){
             return next(err)
         }
         var  upload_file = files.file[0];//originalFilename,path
-          // root = _path_.join(root,querystring.unescape(upload_root_dir_name[file_label]));
 	    var buf_temp = new Buffer(_path_.join(root,upload_root_dir_name[file_label]),"UTF-8");
         console.log(buf_temp.toString()+"; root path");
 	    root =_path_.join(buf_temp.toString());
 
         var extName = file_name+_path_.extname(upload_file.path);
 	    var buf = new Buffer(upload_root_dir_name[file_label],"UTF-8");
-	    //console.log(buf.toString());
-        //root = _path_.join(root,buf.toString());
         try{
             var is_out = fs.createReadStream(upload_file.path);
                     var os_out = fs.createWriteStream(root+"/"+extName);
@@ -104,7 +93,6 @@ router.get('/path',csrfProtection,function(req,res,next){
     var nums = req.query.nums+"";
     var root = querystring.unescape(nums),
         path = _path_.join(__dirname,"../","public/upload/xmu",root);
-    //console.log(path);
     fs.exists(path,function(exists){
         if(!exists){
             util.error('找不到文件'+path);
@@ -115,7 +103,6 @@ router.get('/path',csrfProtection,function(req,res,next){
                     res.end("");
                 }else if(stat.isDirectory()){
                     var dirList = fs.readdirSync(path);
-                    //console.log(dirList.length);
                     res.end(dirList.length+"");
                 }
             });
@@ -125,10 +112,8 @@ router.get('/path',csrfProtection,function(req,res,next){
 });
 
 router.get('/2015',authRequired,csrfProtection,function(req,res,next){
-    //console.log(req.user)
     var url_query = req.query;
     if(isEmpty(url_query)){
-        //console.log(url_query)
         showDirectory(dirs.root,req,res,next);
     }else{
         var urlPath = req.query.path,
@@ -152,7 +137,7 @@ router.get('/2015',authRequired,csrfProtection,function(req,res,next){
 
 router.get('/signup',csrfProtection, function (req, res, next) {
     res.render('./xmu/signup', {
-        title: "厦大2015春季软件工程硕士",
+        title: "厦大2015级软件工程硕士",
         website: "XMU",
         message: req.flash('signupMessage'),
         csrfToken: req.csrfToken()
@@ -186,17 +171,17 @@ router.get('/forget',csrfProtection, function (req, res, next) {
         crypto.randomBytes(20, function (err, buf) {
             user.resetPasswordToken = buf.toString('hex');
             user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-            user.resetFlag = 1; // 1: 代表还没有重置；0：代表重置后。
+            user.resetFlag = 1;
             var link = config.schema + config.outerHost + ':' + config.port + '/xmu/reset/' + user.resetPasswordToken;
 
-if(link.indexOf(":"+config.port)){
-                                var host = link.split(":"+config.port);
-                                var temp="";
-                                for(var i=0;i<host.length;i++){
-                                        temp+=host[i];
-                                }
-                                link = temp;
-                        }
+            if(link.indexOf(":"+config.port)){
+                var host = link.split(":"+config.port);
+                var temp="";
+                for(var i=0;i<host.length;i++){
+                    temp+=host[i];
+                }
+                link = temp;
+            }
 
 
             user.save(function (err, user) {
@@ -267,7 +252,6 @@ router.post("/reset/:token",csrfProtection, function (req, res, next) {
         username: req.body.username,
         resetFlag: 1
     }, function (err, user) {
-        //console.log(user)
         if (!user) {
             res.render('./xmu/forget.html', {
                 title: "找回密码",
@@ -278,7 +262,7 @@ router.post("/reset/:token",csrfProtection, function (req, res, next) {
             return;
         }
         var password = user.generateHash(req.body.password);
-        //var newUser = new User({username: req.body.username});
+
         console.log("after reseting:" + req.body.password);
 
         user.password = password;
@@ -297,7 +281,6 @@ router.post("/reset/:token",csrfProtection, function (req, res, next) {
 });
 
 router.get('/signin',csrfProtection,function (req, res, next) {
-    //console.log(req.user);
     res.render('./xmu/signin', {
         title: "登陆",
         website: "XMU",
@@ -342,7 +325,6 @@ function showDirectory(parent,req,res,next){
                 xmu_bbs.find({}).sort({upload_time: -1})
                     .paginate(page_option, function (err, pager) {
                         if (err) return next(err);
-                        //console.log(pager);
                         res.render('./xmu/html.html', {
                             title: _path_.basename(parent),
                             msg_files: files,

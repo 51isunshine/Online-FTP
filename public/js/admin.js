@@ -1,5 +1,5 @@
 /**
- * Created by dylan.zhang on 2/15/16.
+ * Created by dylan.zhang.
  */
 
 function simpleValidate(){
@@ -39,16 +39,6 @@ function signUp(){
         infoMsg("两次输入的密码不一致");
         return false;
     }
-/*
-     $.post('',$('form').serialize())
-         .done(function(res){
-         console.log(res);
-         infoMsg("注册成功");
-     })
-     .fail(function(res){
-        infoMsg("服务器出现异常。");
-     });
-*/
     $('.alert').hide();
     $('.alert-danger').html("正在注册...").show();
     return true;

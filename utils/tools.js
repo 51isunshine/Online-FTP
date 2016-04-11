@@ -1,21 +1,17 @@
 /**
  * @author Dylan.zhang
- * @Date 2016 02-16
  */
 
 var nodemailer = require('nodemailer'),
     _ = require('lodash');
 
-var config = require('../config.js'),
-    property = require('../routes/property.js');
+var config = require('../config.js');
 var transporter = nodemailer.createTransport(config.smtp);
 
 var defaultMail = {
-    from: property.emailName+'<' + config.smtp.auth.user + '>',
+    from: "admin.dylan"+'<' + config.smtp.auth.user + '>',
     subject: '欢迎光顾',
-    //to: 'asdfg@163.com, qwert@qq.com',
-    //text: 'test text',
-    html: '<b>欢迎访问</b>'+property.websiteName
+    html: '<b>欢迎访问</b>'
 };
 
 function sendMail(mail){

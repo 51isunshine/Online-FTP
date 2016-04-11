@@ -6,19 +6,14 @@ var LocalStrategy = require('passport-local').Strategy;
 var Login = require('./../module/login.js'),
     crypto = require('crypto');
 
-var config = require('../../config.js'),
-    tools = require('../../utils/tools.js');
+var config = require('./../config.js'),
+    tools = require('./tools.js');
 
 module.exports = function(passport){
     passport.serializeUser(function(user,done){
-        //done(null,user.id);
         done(null,user);
     });
     passport.deserializeUser(function(id,done){
-        //Login.findById(id,function(err,user){
-        //    console.log(user);
-        //    done(err,user);
-        //})
         done(null, id);
     });
 
@@ -36,12 +31,9 @@ module.exports = function(passport){
                 console.log(!user);
                 return done(null, false, req.flash('loginMessage', "找不到" + username));
             }
-            //console.log(user);
             if (!user.validPassword(password)){
                 return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
             }
-            //console.log(user);
-            //req.logout();
             return done(null, user);
         })
     }));

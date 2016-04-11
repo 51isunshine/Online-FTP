@@ -1,6 +1,6 @@
 /**
  * @created: dylan.zhang
- * @Date: 2016.02.01
+ * @Email: dylan.zhang@ringcentral.com
  * @name app.js
  */
 var express = require('express');
@@ -14,47 +14,30 @@ var bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     flash = require('connect-flash');
-var csrf = require('csurf');
-
+//var csrf = require('csurf');
 var app = express();
 
 // user-define
 var app_config = require('./config.js'),
-    routes = require('./routes/index.js'),
-    account = require('./module/User.js'),
-    admin = require('./routes/admin.js'),
-    upload = require('./routes/upload.js'),
-    xmu = require("./xmu/xmu.js");
+    routes = require('./routes/index.js');
 
 var querystring=require('querystring');
 
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(session({secret: 'dylan', resave: true, httpOnly: true,saveUninitialized: true, cookie: {maxAge: 6000000}}));
+app.use(session({secret: 'online-ftp', resave: true, httpOnly: true,saveUninitialized: true, cookie: {maxAge: 6000000}}));
 //app.use(csrf({ cookie: true }));
 
 app.engine('html', swig.renderFile);
-//app.set('view engine', 'ejs');
 
-swig.setFilter('abstract', function (input) {
-    var temp = "";
-    if(input.length>180){
-        temp = input.substring(0,180);
-        return temp;
-    }
-    return input;
-});
 swig.setFilter('equal2String', function (input) {
     if((typeof input)!="string"){
         input = String.toString(input);
     }
-    var name = input.toLowerCase();
-    if("dylan"==name||"张治"==name||"豆豆"==name||"doudou"==name||"test"==name||"蔡莉"==name||"张馨语"==name){
-        return "原创";
-    }
     return input;
 });
+
 swig.setFilter('dir_goBack',function(input){
     input = querystring.unescape(input);
     var len = input.lastIndexOf("/");
@@ -66,7 +49,6 @@ app.set('env', app_config.env);
 app.set('port', app_config.port);
 
 require('./utils/passport.js')(passport);
-require('./module/xmu/xmu_passport.js')(passport);
 mongoose.connect(app_config.mongodb);
 
 app.use(passport.initialize());
@@ -77,18 +59,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger("dev"));
 
-app.use('/', routes);
-app.use('/article', routes);
-app.use('/user/', admin);
-app.use('/upload/',upload);
-app.use('/xmu/',xmu);
+app.use('/xmu', routes);
 
 app.use(function (req, res) {
     res.end(req.csrfToken() || 'none')
 })
 
-//app.use(multipart({uploadDir: __dirname + '/public/uploads'}));
-// catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;

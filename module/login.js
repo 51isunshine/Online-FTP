@@ -36,7 +36,7 @@ var loginSchema = new Schema({
     flag:{
         type:Number,
         default:0
-    }, // 用于接收不到邮件,0 表示成功，1表示未成功。
+    },
     loginData:{
         type:Date
     }

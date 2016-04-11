@@ -1,11 +1,7 @@
 var mime = {
-
-  //查找文件后缀类型
   lookupExtension : function(ext, fallback) {
     return mime.TYPES[ext.toLowerCase()] || fallback || 'text/plain';
   },
-
-  //文件类型
   TYPES : { ".3gp"   : "video/3gpp"
           , ".a"     : "application/octet-stream"
           , ".ai"    : "application/postscript"
