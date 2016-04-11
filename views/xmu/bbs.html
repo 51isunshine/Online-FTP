@@ -1,0 +1,48 @@
+<script type="text/javascript">
+    function pageBBS(page){
+        console.log(page);
+        $.ajax({
+            url:"/xmu/bbs_page/"+page,
+            type:"GET",
+            success:function(data){
+                $('#bbs_content_body').html(data);
+            },
+            error:function(){
+                console.log("error");
+            }
+        })
+        return false;
+    }
+
+</script>
+<div id="bbs" style="margin: 2px">
+    {% for page_result in msg_pagers.results %}
+    <div id="body_bbs">
+        <div id="bbs_title" style="font-size: 9px;color: #009999">
+					<span>
+                        <strong>{{page_result.user|equal2String}}</strong>
+						<i>{{page_result.upload_time|date('Y-m-d l h:i a',-480,"GMT+8")}}</i>
+                    </span>
+        </div>
+        <p id="bbs_content">
+            {{page_result.bbs_content}}
+        </p>
+    </div>
+    {% endfor %}
+    <!-- paginate -->
+    <nav class="page-nav">
+        <ul class="pagination">
+            <li {% if msg_pagers.prev %}class="disabled" {% endif %}>
+                <a href="/xmu/bbs?page={{ msg_pagers.prev }}">&laquo;</a>
+            </li>
+            {% for page in msg_pagers.pages %}
+            <li {% if page===current %}class="active" {% endif %}>
+                <a href="javascript:void(0)" id="page"{{page}} onclick="pageBBS({{page}})">{{page}}</a>
+            </li>
+            {% endfor %}
+            <li {% if msg_pagers.next %}class="disabled" {% endif %}>
+                <a href="/xmu/bbs?page={{ msg_pagers.next }}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+</div>

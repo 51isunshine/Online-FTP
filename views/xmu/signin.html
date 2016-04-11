@@ -1,0 +1,82 @@
+{% extends '../layout.html' %}
+{% block head %}
+{% include "../head.html" %}
+<link rel="stylesheet" href="/css/admin.css" />
+
+{% endblock %}
+{% block content %}
+
+<div id="login-logo" >
+
+</div>
+
+<div id="login-body">
+    <div class="login-nav">
+        <h2 class="login-welcome-hints">
+            <strong><b><a href="/">厦大2015春季软件工程硕士</a></b></strong>
+        </h2>
+
+    </div>
+    <form id="login-form" class="" action="/xmu/signin" method="post" >
+        <div class="control-group">
+            <div class="controls">
+                <div class="input-prepend">
+                     <span class="add-on">
+                         <i class="icon-user" ></i>
+                     </span>
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                    <input type="text" placeholder="用户名" name="username" required="请输入用户名"/>
+                </div>
+            </div>
+        </div>
+        <div class="control-group" style="display: none">
+            <div class="controls">
+                <div class="input-prepend">
+                     <span class="add-on">
+                       <a class="envelope"><i class="icon-envelope" ></i></a>
+                     </span>
+                    <input type="text" placeholder="邮箱" name="email"/>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <i class="icon-exclamation-sign" style="display:none;"></i>
+                <div class="input-prepend">
+                     <span class="add-on">
+                        <i class="icon-lock" ></i>
+                     </span>
+                    <input type="password" placeholder="密码" name="password" required="请输入密码"/>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-actions">
+            {% if (message.length > 0) %}
+            <div class="alert alert-danger">{{message}}</div>
+            {% endif %}
+            <span class="pull-left" ><a href="/xmu/forget" class="flip-link" id="to-recover">忘记密码</a></span>
+            <span class="pull-right"><input type="submit" class="btn btn-inverse" value="登陆" /></span>
+        </div>
+    </form>
+    <div id="sign-up" class="pull-left" >
+        <div style="display: none;">
+            <span>合作方帐号登录：</span>
+            <a href="#" target="_blank">
+                <img src="../../img/icon/wechat_login.png" alt="微信登录">
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            <a href="#" target="_blank">
+                <img src="../../img/icon/qq_login.png" alt="QQ登录">
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            <a href="#" target="_blank">
+                <img src="../../img/icon/weibo_login.png" alt="新浪微博登录">
+            </a>
+        </div>
+
+        &nbsp;&nbsp;&nbsp;
+        <span><a href="/xmu/signup" class="flip-link">立即注册账号</a></span>
+    </div>
+</div>
+{% endblock %}
