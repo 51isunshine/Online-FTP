@@ -62,14 +62,15 @@ app.use(logger("dev"));
 app.use('/xmu', routes);
 
 app.use(function (req, res) {
-    res.end(req.csrfToken() || 'none')
-})
-
-app.use(function (req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+    //res.end(req.csrfToken() || 'none')
+    res.render('error.html', {
+        message: "张治的个人网站|私房菜",
+        error: {},
+        title: "张治的个人网站|私房菜",
+        website: "张治的个人网站"
+    });
 });
+
 
 process.on('uncaughtException', function (err,next) {
     console.error((new Date()).toUTCString() + ' uncaughtException found:',
@@ -78,25 +79,6 @@ process.on('uncaughtException', function (err,next) {
     app.route("/");
     process.exit(1);
 });
-
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-    if (err.code !== 'EBADCSRFTOKEN') return next(err)
-    // handle CSRF token errors here
-    res.status(403);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-})
 
 app.listen(app.get('port'), function () {
     console.log('listening on port ' + app.get('port'));
