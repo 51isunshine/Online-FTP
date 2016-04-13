@@ -1,5 +1,6 @@
 # Online-FTP
-Online-FTP
+
+Online-FTP, Not only FTP
 
 ## Features
 
@@ -14,6 +15,7 @@ Online-FTP
 
 * install: [NodeJS](https://nodejs.org/en/)
 * install: [Mongodb](https://www.mongodb.org/downloads#production)
+* [more information](http://www.idylan.cn/article/1460521631970)
 
 ## Run
 
